@@ -71,7 +71,7 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	// Make sure we get the expected input - ex: localhost:8080/stock/
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) != 3 || parts[1] != "stock" {
-		http.Error(w, "Invalid request format. Use localhost:8080/stock/", http.StatusBadRequest)
+		http.Error(w, "Invalid request format. Use http://stockpickerping.com/stock/", http.StatusBadRequest)
 		return
 	}
 

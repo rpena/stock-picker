@@ -53,9 +53,4 @@ docker-build:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) -f $(DOCKERFILE) .
 	@echo "Docker image $(IMAGE_NAME):$(IMAGE_TAG) built successfully."
 
-docker-run:
-	@echo "Running Docker container $(IMAGE_NAME):$(IMAGE_TAG)..."
-	docker run -d -p 8080:8080 --name $(APP_NAME)-container $(IMAGE_NAME):$(IMAGE_TAG)
-	@echo "Container $(APP_NAME)-container started. Access at http://localhost:8080/stock/"
-
-.PHONY: all build test run clean fmt lint deps docker-build
+.PHONY: all build test run clean fmt deps docker-build
