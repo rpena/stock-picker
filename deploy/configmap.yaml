@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stock-picker-config
+  labels:
+    app: stock-picker
+data:
+  SYMBOL_ENV: "MSFT"
+  NDAYS_ENV: "7"
+  APIKEY_PATH: "/etc/secrets/apikey.txt"
+

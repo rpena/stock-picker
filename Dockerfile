@@ -15,11 +15,6 @@ COPY . .
 #   -s: Omit the symbol table and debug information.
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-w -s" -o /app/stock-picker /app/cmd/main.go
 
-FROM scratch
-
-COPY --from=builder /app/stock-picker /stock-picker
-
-
 EXPOSE 8080
 
-ENTRYPOINT [ "/stock-picker" ]
+ENTRYPOINT [ "/app/stock-picker" ]

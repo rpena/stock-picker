@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-picker-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stock-picker
+  template:
+    metadata:
+      labels:
+        app: stock-picker
+    spec:
+      volumes:
+        - name: apikey-volume
+          secret:
+            secretName: stock-picker-apikey
+            items:
+              - key: api-key
+                path: apikey.txt
+      containers:
+      - name: stock-picker-container
+        image: stock-picker:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+        envFrom:
+          - configMapRef:
+              name: stock-picker-config
+        volumeMounts:
+          - name: apikey-volume
+            mountPath: /etc/secrets
+            readOnly: true

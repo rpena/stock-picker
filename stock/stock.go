@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"time"
 
 	"stock-picker/config"
 )
+
+const dateLayoutYMD = "2006-01-02" // Date layout used
 
 // Output data
 type StockInfo struct {
@@ -51,15 +54,17 @@ func getNDays(data map[string]DailyData, numDays int) map[string]DailyData {
 		return data
 	}
 
-	if numDays > len(data) {
-		numDays = len(data)
-	}
-
 	// Get list of dates
 	var dates []string
+	now := time.Now()
+	nDaysAgo := now.AddDate(0, 0, -numDays) // Subtract numDays from now
+	cutOffDate := nDaysAgo.Format(dateLayoutYMD)
+	log.Printf("Using cutoff date value %v", cutOffDate)
 	for date := range data {
-		// TODO: only append if within date range
-		dates = append(dates, date)
+		// Only append if within date range
+		if date >= cutOffDate {
+			dates = append(dates, date)
+		}
 	}
 
 	// Sort dates since they could be out of order
@@ -69,9 +74,6 @@ func getNDays(data map[string]DailyData, numDays int) map[string]DailyData {
 	for i := range dates {
 		date := dates[i]
 		nTimeSeriesDaily[date] = data[date]
-		if len(nTimeSeriesDaily) == numDays {
-			break
-		}
 	}
 	return nTimeSeriesDaily
 }
@@ -83,7 +85,6 @@ func getAvgPrice(data map[string]DailyData) float64 {
 	if len(data) == 0 {
 		return sum
 	}
-
 	for _, dailyData := range data {
 		value, _ := strconv.ParseFloat(dailyData.AdjustedClose, 64)
 		sum += value
@@ -92,13 +93,11 @@ func getAvgPrice(data map[string]DailyData) float64 {
 }
 
 func GetStockData() (*StockInfo, error) {
-	// apikey, err := config.ReadAPIKey()
-	// if err != nil {
-	// 	return nil, err
-	// }
-	apikey := "3XZLSTHJI7CJ44PY"
-	//log.Printf(": %s\n", apikey)
-
+	// Collect data related to making API request
+	apikey, err := config.ReadAPIKey()
+	if err != nil {
+		return nil, err
+	}
 	symbol, err := config.GetEnvData(config.SYMBOL_ENV)
 	if err != nil {
 		return nil, err

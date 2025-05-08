@@ -41,13 +41,7 @@ fmt:
 	@go fmt ./...
 	@echo "Formatting complete."
 
-# Run static analysis (using golangci-lint - you might need to install it)
-lint:
-	@echo "Running static analysis (lint)..."
-	@golangci-lint run ./...
-	@echo "Linting complete."
-
-# Install dependencies (if you use modules)
+# Install dependencies
 deps:
 	@echo "Installing dependencies..."
 	@go mod tidy
